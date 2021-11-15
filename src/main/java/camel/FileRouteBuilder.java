@@ -3,11 +3,10 @@ package camel;
 import org.apache.camel.builder.RouteBuilder;
 
 public class FileRouteBuilder extends RouteBuilder {
-    private final static String EMAIL_URI = "smtps://smtp.gmail.com:465?username=jmsocialproject@gmail.com&password=pynkbdswxcvzgwvj";
 
     @Override
     public void configure() throws Exception {
-        from("file:files/from?noop=true")
+        from("file:{{from}}")
                         .transacted()
                         .choice()
                         .when(header("CamelFileName").endsWith(".xml"))
@@ -23,10 +22,9 @@ public class FileRouteBuilder extends RouteBuilder {
                             .to("activemq:invalid.queue")
                         .end()
                         .process(new CountMsg())
-                        .choice()
-                        .when(header("StatMsg").isEqualTo(true))
+                        .filter(header("StatMsg").isEqualTo(true))
                             .process(new StatMsg())
                             .setHeader("subject", simple("Files statistic message"))
-                            .to(EMAIL_URI);
+                            .to("{{email.uri}}");
     }
 }

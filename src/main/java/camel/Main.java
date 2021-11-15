@@ -7,6 +7,7 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
 import bitronix.tm.resource.jms.PoolingConnectionFactory;
 import org.apache.camel.*;
 
+import org.apache.camel.component.properties.PropertiesComponent;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -51,6 +52,7 @@ public class Main {
         myConnectionFactory.getDriverProperties().setProperty("brokerURL", "tcp://localhost:61616");
         myConnectionFactory.init();
 
+
         SimpleRegistry registry = new SimpleRegistry();
         registry.put("transactionManager", JTAtm);
         registry.put("xaDataSource", xaDataSource);
@@ -59,6 +61,7 @@ public class Main {
 //        ----------
 
         CamelContext context = new DefaultCamelContext(registry);
+        context.getComponent("properties", PropertiesComponent.class).setLocation("classpath:application.properties");
         FileRouteBuilder fileRouteBuilder = new FileRouteBuilder();
         context.addRoutes(fileRouteBuilder);
 
