@@ -69,6 +69,5 @@ public class Main {
         Thread.sleep(2000);
         context.stop();
         myConnectionFactory.close();
-
     }
 }
