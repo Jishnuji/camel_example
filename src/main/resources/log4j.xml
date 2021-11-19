@@ -6,9 +6,23 @@
             <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %p %m%n"/>
         </layout>
     </appender>
+    <!--File appender -->
+    <appender name="file" class="org.apache.log4j.FileAppender">
+        <param name="file" value="log/mylogfile.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %p %m%n"/>
+        </layout>
+    </appender>
+
+    <logger name="someClass" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="stdout"/>
+    </logger>
 
     <root>
-        <level value="INFO"/>
+        <level value="ERROR"/>
+        <appender-ref ref="file"/>
         <appender-ref ref="stdout"/>
     </root>
+
 </log4j:configuration>

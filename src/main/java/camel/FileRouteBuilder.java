@@ -6,6 +6,7 @@ public class FileRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+        errorHandler(deadLetterChannel("activemq:invalid.queue").onExceptionOccurred(new OnErrorLogger()));
         from("file:{{from}}")
                         .transacted()
                         .choice()
@@ -19,8 +20,9 @@ public class FileRouteBuilder extends RouteBuilder {
 //                            .setBody(simple("INSERT INTO file_message (file_name, file_body) VALUES('${header.CamelFileName}','${body}')"))
 //                            .to("jdbc:xaDataSource");
                         .otherwise()
-                            .process(new MyExceptionThrower())
-                            .to("activemq:invalid.queue")
+                            .to("log:?level=ERROR&showBody=true&showHeaders=true")
+                            .process(new IllegalFileFormatExceptionThrower())
+
                         .end()
                         .process(new CountMsg())
                         .filter(header("StatMsg").isEqualTo(true))
